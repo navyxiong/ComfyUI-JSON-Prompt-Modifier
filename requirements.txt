@@ -1,2 +1,0 @@
-# JSON-Prompt-Modifier for ComfyUI
-# No external dependencies required
