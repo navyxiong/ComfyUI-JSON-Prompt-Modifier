@@ -1,45 +1,53 @@
-import { app } from "../../scripts/app.js";
+import { app } from "../../../scripts/app.js";
+import { api } from "../../../scripts/api.js";
 
 app.registerExtension({
-    name: "JSON.Prompt.Modifier",
+    name: "Comfy.JSONPromptModifier",
     async beforeRegisterNodeDef(nodeType, nodeData, app) {
         if (nodeData.name === "JSON-Prompt-Modifier") {
-            // 当节点创建时执行
+            
             const onNodeCreated = nodeType.prototype.onNodeCreated;
-            nodeType.prototype.onNodeCreated = function () {
+            nodeType.prototype.onNodeCreated = function() {
                 onNodeCreated?.apply(this, arguments);
+                const jsonWidget = this.widgets.find(w => w.name === "json_text");
 
-                const widget = this.widgets.find((w) => w.name === "json_text");
-
-                // --- 1. 创建“加载文件”按钮 ---
-                this.addWidget("button", "📂 Load JSON/TXT", null, () => {
+                // 加载本地文件
+                this.addWidget("button", "📂 加载本地提示词", null, () => {
                     const input = document.createElement("input");
                     input.type = "file";
-                    input.accept = ".txt,.json";
                     input.onchange = (e) => {
                         const file = e.target.files[0];
-                        if (!file) return;
                         const reader = new FileReader();
-                        reader.onload = (f) => {
-                            widget.value = f.target.result; // 将内容填入文本框
-                        };
+                        reader.onload = (f) => { jsonWidget.value = f.target.result; };
                         reader.readAsText(file);
                     };
                     input.click();
                 });
 
-                // --- 2. 创建“导出文件”按钮 ---
-                this.addWidget("button", "💾 Export to Local", null, () => {
-                    const text = widget.value;
-                    const blob = new Blob([text], { type: "text/plain" });
+                // 导出到本地
+                this.addWidget("button", "💾 导出修改后的文本", null, () => {
+                    const blob = new Blob([jsonWidget.value], { type: "text/plain" });
                     const url = URL.createObjectURL(blob);
                     const a = document.createElement("a");
                     a.href = url;
                     a.download = "modified_prompt.txt";
                     a.click();
-                    URL.revokeObjectURL(url);
                 });
+
+                this.setSize([400, 480]);
             };
+
+            // 监听后端发来的自动更新消息
+            api.addEventListener("json_modifier_update_text", (event) => {
+                const { node_id, text } = event.detail;
+                const node = app.graph.getNodeById(node_id);
+                if (node) {
+                    const widget = node.widgets.find(w => w.name === "json_text");
+                    if (widget && widget.value !== text) {
+                        widget.value = text;
+                    }
+                }
+            });
         }
-    },
+    }
 });
