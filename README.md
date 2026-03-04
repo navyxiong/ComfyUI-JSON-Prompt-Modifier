@@ -1,52 +1,30 @@
-# JSON-Prompt-Modifier for ComfyUI
+# ComfyUI-JSON-Prompt-Modifier 🛠️
 
-[![ComfyUI](https://img.shields.io/badge/ComfyUI-Custom%20Node-blue)](https://github.com/comfyanonymous/ComfyUI)
-[![License](https://img.shields.io/badge/license-MIT-green)](LICENSE)
+这是一个为 ComfyUI 打造的交互式 JSON 提示词编辑器，特别优化了对 **Qwen3-VQA** 等视觉语言模型输出的处理流。
 
-一个简洁的ComfyUI自定义节点，用于加载、编辑和导出JSON格式的提示词文件。
+---
 
-## ✨ 功能特性
+## ✨ 核心特性
 
-- 📂 **加载JSON文件** - 支持上传和解析txt/json格式的提示词文件
-- 👁️ **可视化展示** - 在节点内直接展示JSON结构，支持语法高亮
-- ✏️ **实时编辑** - 在节点界面直接修改JSON内容
-- 💾 **灵活导出** - 支持自定义保存路径，自动命名
+* **自动流转**: 当 `vqa_input` 接收到上游节点（如 Qwen3）生成的字符串时，它会**自动显示**在中间的编辑对话框中。
+* **即时修改**: 你可以直接在展示出的文本框内手动编辑、增加描述词或修正 JSON 语法。
+* **本地交互**: 
+    * 📂 支持点击按钮加载本地 `.txt` 或 `.json` 提示词。
+    * 💾 支持修改后一键导出下载到本地电脑。
+* **智能解析**: 后端会自动将文本框内容转换为标准的 JSON 对象，方便连接后续的提示词解析节点。
 
-## 🚀 安装方法
+## 🛠️ 安装方法
 
-### 方法一：通过ComfyUI Manager（推荐）
-1. 打开ComfyUI Manager
-2. 点击 "Install Custom Nodes"
-3. 搜索 "JSON-Prompt-Modifier"
-4. 点击 Install
+1. 进入 `ComfyUI/custom_nodes/` 目录。
+2. 运行 `git clone https://github.com/您的用户名/ComfyUI-JSON-Prompt-Modifier.git`。
+3. 重启 ComfyUI。
 
-### 方法二：手动安装
-```bash
-cd ComfyUI/custom_nodes
-git clone https://github.com/yourusername/ComfyUI-JSON-Prompt-Modifier.git
+## 🚀 操作流程
 
-##  📖 使用指南
-基本操作流程
-添加节点：在ComfyUI右键菜单中找到 utils/prompt/JSON-Prompt-Modifier 📝
-加载文件：
-点击 "📁 选择JSON文件" 按钮
-或在 file_path 输入框填入绝对路径
-将 operation 设为 load
-查看与编辑：
-JSON内容会显示在节点的可视化编辑器中
-直接在文本区域修改内容
-导出：
-点击 "💾 导出文件" 按钮
-自定义保存路径或自动生成 _modified.json
-输入参数说明
-| 参数名            | 类型     | 说明             |
-| -------------- | ------ | -------------- |
-| `file_path`    | STRING | JSON文件的绝对路径    |
-| `operation`    | COMBO  | 操作类型：load/save |
-| `json_content` | STRING | JSON内容文本（可编辑）  |
-| `save_path`    | STRING | 自定义保存路径（可选）    |
+1. **连接**: 将 Qwen3 节点的输出连接至 `vqa_input`。
+2. **生成**: 运行工作流，Qwen 生成的描述会**自动出现在**节点的文本框里。
+3. **编辑**: 如果不满意，直接在文本框内打字修改。
+4. **保存**: 点击 "导出" 按钮将结果存入本地。
 
-输出说明
-json_string: JSON字符串格式输出
-json_object: JSON对象格式输出
-success: 操作是否成功（布尔值）
+## 📜 许可证
+MIT
